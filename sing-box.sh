@@ -184,7 +184,7 @@ install_singbox() {
 
     # 生成自签名证书
     openssl ecparam -genkey -name prime256v1 -out "${work_dir}/private.key"
-    openssl req -new -x509 -days 3650 -key "${work_dir}/private.key" -out "${work_dir}/cert.pem" -subj "/CN=bing.com"
+    openssl req -new -x509 -days 3650 -key "${work_dir}/private.key" -out "${work_dir}/cert.pem" -subj "/CN=apple.com"
 
    # 生成配置文件
 cat > "${config_dir}" << EOF
@@ -217,11 +217,11 @@ cat > "${config_dir}" << EOF
         ],
         "tls": {
             "enabled": true,
-            "server_name": "www.iij.ad.jp",
+            "server_name": "nswdist.apple.com",
             "reality": {
                 "enabled": true,
                 "handshake": {
-                    "server": "www.iij.ad.jp",
+                    "server": "nswdist.apple.com",
                     "server_port": 443
                 },
                 "private_key": "$private_key",
@@ -243,7 +243,7 @@ cat > "${config_dir}" << EOF
     ],
     "transport": {
         "type": "ws",
-        "path": "/vmess",
+        "path": "/",
         "early_data_header_name": "Sec-WebSocket-Protocol"
         }
     },
@@ -260,7 +260,7 @@ cat > "${config_dir}" << EOF
             }
         ],
         "ignore_client_bandwidth":false,
-        "masquerade": "https://bing.com",
+        "masquerade": "https://apple.com",
         "tls": {
             "enabled": true,
             "alpn": [
