@@ -217,11 +217,11 @@ cat > "${config_dir}" << EOF
         ],
         "tls": {
             "enabled": true,
-            "server_name": "nswdist.apple.com",
+            "server_name": "swdist.apple.com",
             "reality": {
                 "enabled": true,
                 "handshake": {
-                    "server": "nswdist.apple.com",
+                    "server": "swdist.apple.com",
                     "server_port": 443
                 },
                 "private_key": "$private_key",
