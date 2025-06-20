@@ -217,11 +217,11 @@ cat > "${config_dir}" << EOF
         ],
         "tls": {
             "enabled": true,
-            "server_name": "swdist.apple.com",
+            "server_name": "www.iij.ad.jp",
             "reality": {
                 "enabled": true,
                 "handshake": {
-                    "server": "swdist.apple.com",
+                    "server": "www.iij.ad.jp",
                     "server_port": 443
                 },
                 "private_key": "$private_key",
@@ -243,7 +243,7 @@ cat > "${config_dir}" << EOF
     ],
     "transport": {
         "type": "ws",
-        "path": "/",
+        "path": "/vmess-argo",
         "early_data_header_name": "Sec-WebSocket-Protocol"
         }
     },
@@ -260,7 +260,7 @@ cat > "${config_dir}" << EOF
             }
         ],
         "ignore_client_bandwidth":false,
-        "masquerade": "https://apple.com",
+        "masquerade": "https://bing.com",
         "tls": {
             "enabled": true,
             "alpn": [
@@ -295,7 +295,7 @@ cat > "${config_dir}" << EOF
        }
     }
   ],
- "outbounds": [
+  "outbounds": [
     {
       "type": "direct",
       "tag": "direct"
@@ -331,7 +331,35 @@ cat > "${config_dir}" << EOF
       ],
       "private_key": "gBthRjevHDGyV0KvYwYE52NIPy29sSrVr6rcQtYNcXA=",
       "peer_public_key": "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=",
-      "reserved": [6, 146, 6]
+      "reserved": [
+        6,
+        146,
+        6
+      ]
+    },
+    {
+      "type": "direct",
+      "tag": "wireguard-ipv4-prefer-out",
+      "detour": "wireguard-out",
+      "domain_strategy": "prefer_ipv4"
+    },
+    {
+      "type": "direct",
+      "tag": "wireguard-ipv4-only-out",
+      "detour": "wireguard-out",
+      "domain_strategy": "ipv4_only"
+    },
+    {
+      "type": "direct",
+      "tag": "wireguard-ipv6-prefer-out",
+      "detour": "wireguard-out",
+      "domain_strategy": "prefer_ipv6"
+    },
+    {
+      "type": "direct",
+      "tag": "wireguard-ipv6-only-out",
+      "detour": "wireguard-out",
+      "domain_strategy": "ipv6_only"
     }
   ],
   "route": {
@@ -353,8 +381,10 @@ cat > "${config_dir}" << EOF
     ],
     "rules": [
       {
-        "rule_set": ["geosite-netflix"],
-        "outbound": "wireguard-out"  // 直接指向 WireGuard
+        "rule_set": [
+          "geosite-netflix"
+        ],
+        "outbound": "wireguard-ipv6-only-out"
       },
       {
         "domain": [
@@ -394,14 +424,16 @@ cat > "${config_dir}" << EOF
           ".sentry.io",
           ".stripe.com"
         ],
-        "domain_keyword": ["openaicom-api"],
-        "outbound": "wireguard-out"  // 直接指向 WireGuard
+        "domain_keyword": [
+          "openaicom-api"
+        ],
+        "outbound": "wireguard-ipv6-prefer-out"
       }
     ],
     "final": "direct"
-  },
-  "experimental": {
-    "cache_file": {
+   },
+   "experimental": {
+      "cache_file": {
       "enabled": true,
       "path": "$work_dir/cache.db",
       "cache_id": "mycacheid",
