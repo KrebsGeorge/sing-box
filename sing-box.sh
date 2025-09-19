@@ -199,10 +199,15 @@ cat > "${config_dir}" << EOF
   "dns": {
     "servers": [
       {
-        "tag": "google",
-        "address": "tls://8.8.8.8"
+        "address": "8.8.8.8",
+        "detour": "direct"
+      },
+      {
+        "address": "2606:4700:4700:0:0:0:0:64",
+        "detour": "ipv6-out"
       }
-    ]
+    ],
+    "strategy": "prefer_ipv4"
   },
   "inbounds": [
     {
@@ -218,14 +223,14 @@ cat > "${config_dir}" << EOF
         ],
         "tls": {
             "enabled": true,
-            "server_name": "www.iij.ad.jp",
+            "server_name": "swdist.apple.com",
             "reality": {
                 "enabled": true,
                 "handshake": {
-                    "server": "www.iij.ad.jp",
+                    "server": "swdist.apple.com",
                     "server_port": 443
                 },
-                "private_key": "$private_key",
+                "private_key": "GPCzapYDTfD2clPuA2_PWmsJW4-gtat4Qo_Gvj62kEU",
                 "short_id": [
                   ""
                 ]
@@ -244,7 +249,7 @@ cat > "${config_dir}" << EOF
     ],
     "transport": {
         "type": "ws",
-        "path": "/vmess-argo",
+        "path": "",
         "early_data_header_name": "Sec-WebSocket-Protocol"
         }
     },
@@ -261,7 +266,7 @@ cat > "${config_dir}" << EOF
             }
         ],
         "ignore_client_bandwidth":false,
-        "masquerade": "https://bing.com",
+        "masquerade": "https://apple.com",
         "tls": {
             "enabled": true,
             "alpn": [
@@ -269,8 +274,8 @@ cat > "${config_dir}" << EOF
             ],
             "min_version":"1.3",
             "max_version":"1.3",
-            "certificate_path": "$work_dir/cert.pem",
-            "key_path": "$work_dir/private.key"
+            "certificate_path": "cert.pem",
+            "key_path": "private.key"
         }
 
     },
@@ -281,8 +286,7 @@ cat > "${config_dir}" << EOF
         "listen_port": $tuic_port,
         "users": [
           {
-            "uuid": "$uuid",
-            "password": "$password"
+            "uuid": "$uuid"
           }
         ],
         "congestion_control": "bbr",
@@ -291,155 +295,48 @@ cat > "${config_dir}" << EOF
             "alpn": [
                 "h3"
             ],
-        "certificate_path": "$work_dir/cert.pem",
-        "key_path": "$work_dir/private.key"
+        "certificate_path": "cert.pem",
+        "key_path": "private.key"
        }
     }
   ],
-  "outbounds": [
-    {
-      "type": "direct",
-      "tag": "direct"
-    },
-    {
-      "type": "direct",
-      "tag": "direct-ipv4-prefer-out",
-      "domain_strategy": "prefer_ipv4"
-    },
-    {
-      "type": "direct",
-      "tag": "direct-ipv4-only-out",
-      "domain_strategy": "ipv4_only"
-    },
-    {
-      "type": "direct",
-      "tag": "direct-ipv6-prefer-out",
-      "domain_strategy": "prefer_ipv6"
-    },
-    {
-      "type": "direct",
-      "tag": "direct-ipv6-only-out",
-      "domain_strategy": "ipv6_only"
-    },
-    {
+   "outbounds": [
+{
       "type": "wireguard",
-      "tag": "wireguard-out",
-      "server": "engage.cloudflareclient.com",
+      "tag": "ipv6-out",
+      "server": "162.159.192.1",
       "server_port": 2408,
       "local_address": [
         "172.16.0.2/32",
-        "2606:4700:110:812a:4929:7d2a:af62:351c/128"
+        "2606:4700:110:8eb1:3b27:e65e:3645:97b0/128"
       ],
-      "private_key": "gBthRjevHDGyV0KvYwYE52NIPy29sSrVr6rcQtYNcXA=",
+      "private_key": "COAYqKrAXaQIGL8+Wkmfe39r1tMMR80JWHVaF443XFQ=",
       "peer_public_key": "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=",
-      "reserved": [
-        6,
-        146,
-        6
-      ]
-    },
+      "reserved": [134, 63, 85]
+    }
     {
       "type": "direct",
-      "tag": "wireguard-ipv4-prefer-out",
-      "detour": "wireguard-out",
-      "domain_strategy": "prefer_ipv4"
-    },
-    {
-      "type": "direct",
-      "tag": "wireguard-ipv4-only-out",
-      "detour": "wireguard-out",
+      "tag": "direct-ipv4",
       "domain_strategy": "ipv4_only"
     },
     {
       "type": "direct",
-      "tag": "wireguard-ipv6-prefer-out",
-      "detour": "wireguard-out",
-      "domain_strategy": "prefer_ipv6"
-    },
-    {
-      "type": "direct",
-      "tag": "wireguard-ipv6-only-out",
-      "detour": "wireguard-out",
-      "domain_strategy": "ipv6_only"
+      "tag": "direct",
+      "domain_strategy": "prefer_ipv4"
     }
   ],
   "route": {
-    "rule_set": [
-      {
-        "tag": "geosite-netflix",
-        "type": "remote",
-        "format": "binary",
-        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-netflix.srs",
-        "update_interval": "1d"
-      },
-      {
-        "tag": "geosite-openai",
-        "type": "remote",
-        "format": "binary",
-        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/openai.srs",
-        "update_interval": "1d"
-      }
-    ],
     "rules": [
       {
-        "rule_set": [
-          "geosite-netflix"
-        ],
-        "outbound": "wireguard-ipv6-only-out"
+        "ip_version": 4,
+        "outbound": "direct-ipv4"
       },
       {
-        "domain": [
-          "api.statsig.com",
-          "browser-intake-datadoghq.com",
-          "cdn.openai.com",
-          "chat.openai.com",
-          "auth.openai.com",
-          "chat.openai.com.cdn.cloudflare.net",
-          "ios.chat.openai.com",
-          "o33249.ingest.sentry.io",
-          "openai-api.arkoselabs.com",
-          "openaicom-api-bdcpf8c6d2e9atf6.z01.azurefd.net",
-          "openaicomproductionae4b.blob.core.windows.net",
-          "production-openaicom-storage.azureedge.net",
-          "static.cloudflareinsights.com"
-        ],
-        "domain_suffix": [
-          ".algolia.net",
-          ".auth0.com",
-          ".chatgpt.com",
-          ".challenges.cloudflare.com",
-          ".client-api.arkoselabs.com",
-          ".events.statsigapi.net",
-          ".featuregates.org",
-          ".identrust.com",
-          ".intercom.io",
-          ".intercomcdn.com",
-          ".launchdarkly.com",
-          ".oaistatic.com",
-          ".oaiusercontent.com",
-          ".observeit.net",
-          ".openai.com",
-          ".openaiapi-site.azureedge.net",
-          ".openaicom.imgix.net",
-          ".segment.io",
-          ".sentry.io",
-          ".stripe.com"
-        ],
-        "domain_keyword": [
-          "openaicom-api"
-        ],
-        "outbound": "wireguard-ipv6-prefer-out"
+        "ip_version": 6,
+        "outbound": "ipv6-out"
       }
     ],
     "final": "direct"
-   },
-   "experimental": {
-      "cache_file": {
-      "enabled": true,
-      "path": "$work_dir/cache.db",
-      "cache_id": "mycacheid",
-      "store_fakeip": true
-    }
   }
 }
 EOF
